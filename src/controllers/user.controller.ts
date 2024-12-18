@@ -7,7 +7,7 @@ export const getUsers = async (req: Request, res: Response) => {
     const users = await User.findAll();
     res.json(users);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch users" });
+    res.status(500).json({ error: "Failed to fetch users: " + error });
   }
 };
 
@@ -23,7 +23,7 @@ export const getUser = async (req: Request, res: Response) => {
     }
     res.json(user);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch user" });
+    res.status(500).json({ error: "Failed to fetch user: " + error });
   }
 };
 

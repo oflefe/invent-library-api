@@ -29,6 +29,6 @@ export const createBook = async (req: Request, res: Response) => {
     const book = await Book.create({ name });
     res.status(201).json(book);
   } catch (error) {
-    res.status(500).json({ error: "Failed to create book" });
+    res.status(500).json({ error: "Failed to create book: " + error });
   }
 };
