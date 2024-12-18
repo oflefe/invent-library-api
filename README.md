@@ -23,8 +23,8 @@ This is a simple Library Management API built with Node.js, Express, Sequelize, 
 1. **Clone the Repository**
 
    ```bash
-   git clone <repository-url>
-   cd library-management-api
+   git clone https://github.com/oflefe/invent-library-api.git
+   cd invent-library-api
    ```
 
 2. **Install Dependencies**
