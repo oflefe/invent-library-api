@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import User from "../models/User";
-import Book from "../models/Book";
+import { Op } from "sequelize";
+import { User, BorrowRecord, Book } from "../models";
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
@@ -15,8 +15,23 @@ export const getUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const user = await User.findByPk(id, {
-      include: { model: Book, as: "borrowedBooks" },
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+      include: [
+        {
+          model: BorrowRecord,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          include: [
+            {
+              model: Book,
+              attributes: {
+                exclude: ["createdAt", "updatedAt", "borrowedById"],
+              },
+            },
+          ],
+        },
+      ],
     });
+
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -53,12 +68,12 @@ export const borrowBook = async (req: Request, res: Response) => {
       return;
     }
 
-    if (book.borrowerId) {
+    if (book.borrowedById) {
       res.status(400).json({ error: "Book is already borrowed" });
       return;
     }
 
-    book.borrowerId = user.id;
+    book.borrowedById = user.id;
     await book.save();
 
     res.status(204).send();
@@ -80,13 +95,37 @@ export const returnBook = async (req: Request, res: Response) => {
       return;
     }
 
-    if (!book || book.borrowerId !== user.id) {
+    if (!book || book.borrowedById !== user.id) {
       res.status(400).json({ error: "Book was not borrowed by this user" });
       return;
     }
 
-    book.borrowerId = null;
-    book.score = score || null;
+    const record = await BorrowRecord.findOne({
+      where: { userId: user.id, bookId: book.id },
+    });
+    if (record) {
+      record.score = score;
+      record.returnedAt = new Date();
+      await record.save();
+    } else {
+      await BorrowRecord.create({
+        userId: user.id,
+        bookId: book.id,
+        score: req.body.score,
+        returnedAt: new Date(),
+      });
+    }
+    const allRatings = await BorrowRecord.findAll({
+      where: {
+        bookId: book.id,
+        score: { [Op.ne]: null },
+      },
+      attributes: ["score"],
+    });
+    const total = allRatings.reduce((sum, r) => sum + (r.score ?? 0), 0);
+    const avg = allRatings.length > 0 ? total / allRatings.length : null;
+    book.averageRating = avg;
+    book.borrowedById = null;
     await book.save();
 
     res.status(204).send();

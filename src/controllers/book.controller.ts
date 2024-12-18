@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Book from "../models/Book";
+import { Book } from "../models";
 
 export const getBooks = async (req: Request, res: Response) => {
   try {
@@ -16,8 +16,9 @@ export const getBook = async (req: Request, res: Response) => {
     const book = await Book.findByPk(id);
     if (!book) {
       res.status(404).json({ error: "Book not found" });
+    } else {
+      res.json(book);
     }
-    res.json(book);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch the book" + error });
   }

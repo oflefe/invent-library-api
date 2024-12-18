@@ -1,18 +1,19 @@
-import express from "express";
+import { Router } from "express";
 import {
   getUsers,
+  getUser,
   createUser,
   borrowBook,
   returnBook,
-  getUser,
 } from "../controllers/user.controller";
-import { validateUser } from "../middleware/validate";
-
-const router = express.Router();
-router.get("/", getUsers);
-router.get("/:id", getUser);
-router.post("/", validateUser, createUser);
-router.post("/:userId/borrow/:bookId", borrowBook);
-router.post("/:userId/return/:bookId", returnBook);
-
-export default router;
+import {
+  validateUser,
+  validateBorrow,
+  validateReturn,
+} from "../middleware/validate";
+export const userRoutes = Router();
+userRoutes.get("/", getUsers);
+userRoutes.get("/:id", getUser);
+userRoutes.post("/", validateUser, createUser);
+userRoutes.post("/:userId/borrow/:bookId", validateBorrow, borrowBook);
+userRoutes.post("/:userId/return/:bookId", validateReturn, returnBook);

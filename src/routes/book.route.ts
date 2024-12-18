@@ -1,10 +1,7 @@
-import express from "express";
-import { getBooks, getBook, createBook } from "../controllers/book.controller";
-
-const router = express.Router();
-
-router.get("/", getBooks); 
-router.get("/:id", getBook);
-router.post("/", createBook); 
-
-export default router;
+import { Router } from 'express';
+import { getBooks, getBook, createBook } from '../controllers/book.controller';
+import { validateBook } from '../middleware/validate';
+export const bookRouter = Router();
+bookRouter.get('/', getBooks);
+bookRouter.get('/:id', getBook);
+bookRouter.post('/', validateBook, createBook);

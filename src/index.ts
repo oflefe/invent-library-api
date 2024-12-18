@@ -1,18 +1,11 @@
 import express from "express";
-import userRoutes from "./routes/user.route";
-import bookRoutes from "./routes/book.route";
-import sequelize from "./models";
-import "./models/User";
-import "./models/Book";
-
-sequelize.sync().then(() => {
-  console.log("Database synced");
-});
+import { json } from "body-parser";
+import { userRoutes } from "./routes/user.route";
+import { bookRouter } from "./routes/book.route";
 
 const app = express();
-app.use(express.json());
+app.use(json());
 app.use("/users", userRoutes);
-app.use("/books", bookRoutes);
+app.use("/books", bookRouter);
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(3000, () => console.log("Running on 3000"));
