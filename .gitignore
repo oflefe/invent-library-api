@@ -1,0 +1,31 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.pid.lock
+
+# Coverage directory used by tools like Istanbul or Jest
+coverage/
+
+# TypeScript compiled output
+dist/
+*.tsbuildinfo
+
+# SQLite database
+*.sqlite
+
+# dotenv environment variables file
+.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
