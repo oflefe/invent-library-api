@@ -1,3 +1,4 @@
+import { UserMock, BookMock } from "../mocks/models";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Request, Response } from "express";
 import {
@@ -5,14 +6,22 @@ import {
   getBook,
   createBook,
 } from "../../src/controllers/book.controller";
-import { Book } from "../../src/models/index";
+import { Book } from "../../src/models";
 
 vi.mock("../src/models/Book");
 vi.mock("node-cache");
+vi.mock("sequelize", async (importOriginal) => {
+  const actual = (await importOriginal()) as any;
+  console.log("actual object", actual);
+  return { ...actual, sync: vi.fn() };
+});
 
 describe("Book Controller", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.mock("../src/models", () => {
+      return { Book: BookMock, User: UserMock, BorrowRecord: {} };
+    });
   });
   it("should return all books", async () => {
     const mockBooks = [

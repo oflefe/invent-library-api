@@ -13,6 +13,8 @@ const dbUrl =
 
 export const sequelize = new Sequelize(dbUrl);
 
+
+
 // Uncomment this line and comment the previous line to use SQLite, if you dont want to setup a PostgreSQL database
 // SQlite is a file-based database, so you don't need to install any additional software
 
@@ -114,4 +116,6 @@ BorrowRecord.belongsTo(Book, { foreignKey: "bookId" });
 
 sequelize.sync().then(() => {
   console.log("Database synced");
+}).catch((error) => {
+  console.error("Failed to sync database: ", error);
 });
