@@ -7,10 +7,19 @@ import {
   CreationOptional,
 } from "sequelize";
 
-export const sequelize = new Sequelize({
-  dialect: "sqlite",
-  storage: "./database.sqlite",
-});
+const dbUrl =
+  process.env.DB_URL ||
+  "postgresql://postgres:yourpassword@localhost:5432/library";
+
+export const sequelize = new Sequelize(dbUrl);
+
+// Uncomment this line and comment the previous line to use SQLite, if you dont want to setup a PostgreSQL database
+// SQlite is a file-based database, so you don't need to install any additional software
+
+// export const sequelize = new Sequelize({
+//   dialect: "sqlite",
+//   storage: "./database.sqlite",
+// });
 
 export class User extends Model<
   InferAttributes<User>,
