@@ -140,7 +140,6 @@ docker compose up
 
 - Add JWT-based authentication.
 - Add pagination for list endpoints.
-- Implement fine-grained error handling.
 
 ## License
 
