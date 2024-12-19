@@ -11,7 +11,7 @@ This is a simple Library Management API built with Node.js, Express, Sequelize, 
 ## Tech Stack
 
 - **Backend**: Node.js, Express.js
-- **Database**: SQLite (via Sequelize ORM) chosen because of simplicity and serverless structure
+- **Database**: SQLite (via Sequelize ORM) chosen because of simplicity and serverless structure. Just running the app will initialize the database, no need for extra scripts. 
 
 ## Prerequisites
 
