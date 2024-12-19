@@ -140,7 +140,3 @@ docker compose up
 
 - Add JWT-based authentication.
 - Add pagination for list endpoints.
-
-## License
-
-This project is licensed under the MIT License.
