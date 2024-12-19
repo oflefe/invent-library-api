@@ -103,6 +103,8 @@ export const returnBook = async (req: Request, res: Response) => {
     const record = await BorrowRecord.findOne({
       where: { userId: user.id, bookId: book.id },
     });
+
+
     if (record) {
       record.score = score;
       record.returnedAt = new Date();

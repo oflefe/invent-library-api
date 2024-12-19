@@ -6,7 +6,7 @@ export const getBooks = async (req: Request, res: Response) => {
     const books = await Book.findAll();
     res.json(books);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch books" + error });
+    res.status(500).json({ error: "Failed to fetch books: " + error });
   }
 };
 
@@ -20,7 +20,7 @@ export const getBook = async (req: Request, res: Response) => {
       res.json(book);
     }
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch the book" + error });
+    res.status(500).json({ error: "Failed to fetch the book: " + error });
   }
 };
 

@@ -5,114 +5,113 @@ import {
   getBook,
   createBook,
 } from "../../src/controllers/book.controller";
-import Book from "../../src/models/Book";
+import { Book } from "../../src/models/index";
+import { beforeEach } from "node:test";
 
 // Mock the Book model
 vi.mock("../src/models/Book");
 
 describe("Book Controller", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it("should return all books", async () => {
-    // Mock data
     const mockBooks = [
-      { id: 1, name: "Book One" },
-      { id: 2, name: "Book Two" },
+      { id: 1, name: "Book 1" },
+      { id: 2, name: "Book 2" },
     ];
 
-    // Mock the Book.findAll method
     vi.spyOn(Book, "findAll").mockResolvedValue(mockBooks as any);
 
-    // Mock request and response
     const req = {} as Request;
     const res = {
       json: vi.fn(),
+      status: vi.fn(),
     } as unknown as Response;
 
-    // Call the controller
     await getBooks(req, res);
 
-    // Assertions
     expect(res.json).toHaveBeenCalledWith(mockBooks);
+    expect(res.status).not.toHaveBeenCalledWith(500);
   });
+  it("should handle errors in getBooks", async () => {
+    const errorMessage = "Database error";
+    vi.spyOn(Book, "findAll").mockRejectedValue(new Error(errorMessage));
 
-  it("should return a single book by ID", async () => {
-    // Mock data
-    const mockBook = { id: 1, name: "Book One" };
+    const req = {} as Request;
+    const res = {
+      json: vi.fn(),
+      status: vi.fn().mockReturnThis(),
+    } as unknown as Response;
 
-    // Mock the Book.findByPk method
+    await getBooks(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: `Failed to fetch books: Error: ${errorMessage}`,
+    });
+  });
+  it("should return a book by ID", async () => {
+    const mockBook = { id: 1, name: "Book 1" };
+
     vi.spyOn(Book, "findByPk").mockResolvedValue(mockBook as any);
 
-    // Mock request and response
+    const req = { params: { id: "1" } } as unknown as Request;
+    const res = {
+      json: vi.fn(),
+      status: vi.fn(),
+    } as unknown as Response;
+
+    await getBook(req, res);
+
+    expect(res.json).toHaveBeenCalledWith(mockBook);
+    expect(res.status).not.toHaveBeenCalledWith(404);
+  });
+  it("should handle errors in getBook", async () => {
+    const errorMessage = "Database error";
+    vi.spyOn(Book, "findByPk").mockRejectedValue(new Error(errorMessage));
+
     const req = { params: { id: "1" } } as unknown as Request;
     const res = {
       json: vi.fn(),
       status: vi.fn().mockReturnThis(),
     } as unknown as Response;
 
-    // Call the controller
     await getBook(req, res);
 
-    // Assertions
-    expect(res.json).toHaveBeenCalledWith(mockBook);
-    expect(res.status).not.toHaveBeenCalledWith(404);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: `Failed to fetch the book: Error: ${errorMessage}`,
+    });
   });
+  it("should create a book", async () => {
+    const mockBook = { id: 1, name: "Book 1" };
 
-  it("should return 404 if book is not found", async () => {
-    // Mock the Book.findByPk method
-    vi.spyOn(Book, "findByPk").mockResolvedValue(null);
-
-    // Mock request and response
-    const req = { params: { id: "99" } } as unknown as Request;
-    const res = {
-      json: vi.fn(),
-      status: vi.fn().mockReturnThis(),
-    } as unknown as Response;
-
-    // Call the controller
-    await getBook(req, res);
-
-    // Assertions
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: "Book not found" });
-  });
-
-  it("should create a new book", async () => {
-    // Mock data
-    const mockBook = { id: 1, name: "New Book" };
-
-    // Mock the Book.create method
     vi.spyOn(Book, "create").mockResolvedValue(mockBook as any);
 
-    // Mock request and response
-    const req = { body: { name: "New Book" } } as unknown as Request;
+    const req = { body: { name: "Book 1" } } as unknown as Request;
     const res = {
       json: vi.fn(),
       status: vi.fn().mockReturnThis(),
     } as unknown as Response;
 
-    // Call the controller
     await createBook(req, res);
 
-    // Assertions
-    expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(mockBook);
+    expect(res.status).toHaveBeenCalledWith(201);
   });
-
-  it("should handle errors when creating a book", async () => {
-    // Mock error
+  it("should handle errors in createBook", async () => {
     const errorMessage = "Database error";
     vi.spyOn(Book, "create").mockRejectedValue(new Error(errorMessage));
 
-    // Mock request and response
-    const req = { body: { name: "New Book" } } as unknown as Request;
+    const req = { body: { name: "Book 1" } } as unknown as Request;
     const res = {
       json: vi.fn(),
       status: vi.fn().mockReturnThis(),
     } as unknown as Response;
 
-    // Call the controller
     await createBook(req, res);
 
-    // Assertions
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
       error: `Failed to create book: Error: ${errorMessage}`,

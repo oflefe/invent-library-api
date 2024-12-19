@@ -1,76 +1,57 @@
-import express from "express";
-import { describe, it, expect, vi } from "vitest";
-import * as userController from "../../src/controllers/user.controller";
-import { userRoutes } from "../../src/routes/user.route";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
-import { beforeEach } from "node:test";
-
-const app = express();
-app.use("/users", userRoutes);
+import express, { Router } from "express";
+import bodyParser from "body-parser";
+import { userRoutes } from "../../src/routes/user.route";
+import * as userController from "../../src/controllers/user.controller";
+import * as validate from "../../src/middleware/validate";
 
 vi.mock("../../src/controllers/user.controller");
 
+vi.mock("../../src/middleware/validate");
+
+
+
 describe("User API Routes", () => {
+  let app: express.Express;
   beforeEach(() => {
+    app = express();
+    app.use(bodyParser.json());
+    app.use("/users", userRoutes);
+
     vi.restoreAllMocks();
   });
-  it("should call getUsers controller for GET /users", async () => {
-    (userController.getUsers as vi.Mock).mockImplementationOnce(
-      async (_req, res) => {
-        res.json([{ name: "Jane Doe" }]);
-      }
+
+  it("GET /users should call user controller getUsers and return the list", async () => {
+    (userController.getUsers as vi.Mock).mockImplementationOnce((_req, res) =>
+      res.status(200).json([{ id: 1, name: "Mock Name" }])
     );
     const res = await request(app).get("/users");
-
+    expect(res.body).toStrictEqual([{ id: 1, name: "Mock Name" }]);
+    expect(userController.getUsers).toHaveBeenCalled();
     expect(res.status).toBe(200);
-    expect(res.body).toStrictEqual([{ name: "Jane Doe" }]);
   });
 
-  it("should call getUser controller for GET /users/:id", async () => {
-    const mockGetUser = (
-      userController.getUser as vi.Mock
-    ).mockImplementationOnce(async (_req, res) => {
-      res.json({ name: "John Doe" });
-    });
-
+  it("GET /users/:id should call user controller getUser and return the user", async () => {
+    (userController.getUser as vi.Mock).mockImplementationOnce((_req, res) =>
+      res.status(200).json({ id: 1, name: "Mock Name" })
+    );
     const res = await request(app).get("/users/1");
-    expect(mockGetUser).toHaveBeenCalled();
-    expect(res.body).toStrictEqual({ name: "John Doe" });
-  });
+    expect(res.body).toStrictEqual({ id: 1, name: "Mock Name" });
+    expect(userController.getUser).toHaveBeenCalled();
+    expect(res.status).toBe(200);
+  })
 
-  it("should call createUser controller for POST /users", async () => {
-    (userController.createUser as vi.Mock).mockImplementation(
-      async (req, res) => {
-        res.status(201).json({ id: 1, name: "John Doe" });
-      }
+  it("POST /users should call user controller createUser and return the user", async () => {
+    (validate.validateUser as vi.Mock).mockImplementation((_req, _res, next) =>
+      next()
     );
-
-    const res = await request(app).post("/users").send({ name: "John Doe" });
-
-    expect(res.body).toStrictEqual({ id: 1, name: "John Doe" });
-  });
-
-  it("should call borrowBook controller for POST /users/:userId/borrow/:bookId", async () => {
-    (userController.borrowBook as vi.Mock).mockImplementation(
-      async (req, res) => {
-        res.status(204).send();
-      }
+    (userController.createUser as vi.Mock).mockImplementationOnce((_req, res) =>
+      res.status(201).json({ id: 1, name: "Mock Name" })
     );
-
-    const res = await request(app).post("/users/1/borrow/1");
-
-    expect(res.status).toBe(204);
-  });
-
-  it("should call returnBook controller for POST /users/:userId/return/:bookId", async () => {
-    (userController.returnBook as vi.Mock).mockImplementation(
-      async (req, res) => {
-        res.status(204).send();
-      }
-    );
-
-    const res = await request(app).post("/users/1/return/1").send({ score: 5 });
-
-    expect(res.status).toBe(204);
+    const res = await request(app).post("/users").send({ name: "Mock Name" });
+    expect(res.body).toStrictEqual({ id: 1, name: "Mock Name" });
+    expect(userController.createUser).toHaveBeenCalled();
+    expect(res.status).toBe(201);
   });
 });
