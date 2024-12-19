@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Book } from "../models";
-import NodeCache from "node-cache";
+import cache from "../cache";
 
 export const getBooks = async (req: Request, res: Response) => {
   try {
@@ -11,7 +11,6 @@ export const getBooks = async (req: Request, res: Response) => {
   }
 };
 
-const cache = new NodeCache({ stdTTL: 100, checkperiod: 120 });
 
 export const getBook = async (req: Request, res: Response) => {
   try {

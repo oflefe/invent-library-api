@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 import { User, BorrowRecord, Book } from "../models";
+import cache from "../cache";
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
@@ -104,7 +105,6 @@ export const returnBook = async (req: Request, res: Response) => {
       where: { userId: user.id, bookId: book.id },
     });
 
-
     if (record) {
       record.score = score;
       record.returnedAt = new Date();
@@ -128,6 +128,7 @@ export const returnBook = async (req: Request, res: Response) => {
     const avg = allRatings.length > 0 ? total / allRatings.length : null;
     book.averageRating = avg;
     book.borrowedById = null;
+    cache.set(`book-${book.id}`, book);
     await book.save();
 
     res.status(204).send();
