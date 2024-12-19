@@ -81,7 +81,7 @@ This is a simple Library Management API built with Node.js, Express, Sequelize, 
   - `id`: Primary key
   - `name`: String
   - `borrowedById`: Foreign key (nullable)
-  - `score`: Float (nullable)
+  - `averageRating`: Float (nullable)
 
 
 
