@@ -11,7 +11,7 @@ This is a simple Library Management API built with Node.js, Express, Sequelize, 
 ## Tech Stack
 
 - **Backend**: Node.js, Express.js
-- **Database**: SQLite (via Sequelize ORM)
+- **Database**: SQLite (via Sequelize ORM) chosen because of simplicity and serverless structure
 
 ## Prerequisites
 
@@ -33,15 +33,21 @@ This is a simple Library Management API built with Node.js, Express, Sequelize, 
    npm install
    ```
 
-3. **Run the Application**
+3. **Build**
+
+   ```bash
+   npm run build
+   ```
+
+4. **Run the Application**
 
    ```bash
    npm start
    ```
 
-4. **Access the API**
+5. **Access the API**
    - Base URL: `http://localhost:3000`
-   - Swagger Docs: `http://localhost:3000/api-docs`
+
 
 ## API Endpoints
 
@@ -70,16 +76,21 @@ This is a simple Library Management API built with Node.js, Express, Sequelize, 
 
   - `id`: Primary key
   - `name`: String
-  - `createdAt`: Date
-  - `updatedAt`: Date
 
 - **Books**:
   - `id`: Primary key
   - `name`: String
-  - `borrowerId`: Foreign key (nullable)
+  - `borrowedById`: Foreign key (nullable)
   - `score`: Float (nullable)
-  - `createdAt`: Date
-  - `updatedAt`: Date
+
+
+
+- **BorrowRecord**:
+
+  - `userId`: Primary key
+  - `bookId`: String
+  - `score`: Date
+  - `returnedAt`: Date
 
 ## Development
 
@@ -97,7 +108,11 @@ This is a simple Library Management API built with Node.js, Express, Sequelize, 
 
 3. **Test the API**
    - Use [Postman](https://postman.com/) or `curl` to test endpoints.
-   - Swagger documentation can also be used to interact with the API.
+
+4. **Unit Tests**
+ ```bash
+   npm run test
+   ```
 
 ## Future Improvements
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Request, Response } from "express";
 import {
   getBooks,
@@ -6,14 +6,13 @@ import {
   createBook,
 } from "../../src/controllers/book.controller";
 import { Book } from "../../src/models/index";
-import { beforeEach } from "node:test";
 
-// Mock the Book model
 vi.mock("../src/models/Book");
+vi.mock("node-cache");
 
 describe("Book Controller", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
   it("should return all books", async () => {
     const mockBooks = [
@@ -21,7 +20,7 @@ describe("Book Controller", () => {
       { id: 2, name: "Book 2" },
     ];
 
-    vi.spyOn(Book, "findAll").mockResolvedValue(mockBooks as any);
+    vi.spyOn(Book, "findAll").mockResolvedValueOnce(mockBooks as any);
 
     const req = {} as Request;
     const res = {
@@ -51,11 +50,10 @@ describe("Book Controller", () => {
       error: `Failed to fetch books: Error: ${errorMessage}`,
     });
   });
-  it("should return a book by ID", async () => {
+
+  it("should return a book by ID from database if cache null", async () => {
     const mockBook = { id: 1, name: "Book 1" };
-
-    vi.spyOn(Book, "findByPk").mockResolvedValue(mockBook as any);
-
+    vi.spyOn(Book, "findByPk").mockResolvedValueOnce(mockBook as any);
     const req = { params: { id: "1" } } as unknown as Request;
     const res = {
       json: vi.fn(),
@@ -69,7 +67,7 @@ describe("Book Controller", () => {
   });
   it("should handle errors in getBook", async () => {
     const errorMessage = "Database error";
-    vi.spyOn(Book, "findByPk").mockRejectedValue(new Error(errorMessage));
+    vi.spyOn(Book, "findByPk").mockRejectedValueOnce(new Error(errorMessage));
 
     const req = { params: { id: "1" } } as unknown as Request;
     const res = {

@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "NodeNext",
     "strict": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "esModuleInterop": true,
-    "types": ["vitest"]
+    "types": ["vitest/globals", "node"],
+    "moduleResolution": "nodenext"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

@@ -6,9 +6,10 @@ import {
   InferCreationAttributes,
   CreationOptional,
 } from "sequelize";
-export const sequelize = new Sequelize("library", "user", "pass", {
+
+export const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: "database.sqlite",
+  storage: "./database.sqlite",
 });
 
 export class User extends Model<
@@ -102,6 +103,6 @@ Book.hasMany(BorrowRecord, { foreignKey: "bookId" });
 BorrowRecord.belongsTo(User, { foreignKey: "userId" });
 BorrowRecord.belongsTo(Book, { foreignKey: "bookId" });
 
-sequelize.sync({ force: true }).then(() => {
+sequelize.sync().then(() => {
   console.log("Database synced");
 });
