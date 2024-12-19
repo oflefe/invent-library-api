@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest --coverage --watch",
+    "test:ci": "vitest run --coverage",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
